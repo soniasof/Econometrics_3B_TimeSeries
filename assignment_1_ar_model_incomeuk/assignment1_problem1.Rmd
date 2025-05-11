@@ -1,0 +1,135 @@
+---
+title: 'Assignment 1: Problem I (IEC7413)'
+author: "Sonia Sofia"
+date: "2025-05-11"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r load-libraries-incomeUK}
+# Note: install these in the console before running the script:
+# install.packages("Ecdat")
+# install.packages("dynlm")
+# install.packages("lmtest")
+# install.packages("tseries")
+
+library(Ecdat)      # Contains the IncomeUK dataset
+library(dynlm)      # For dynamic linear models
+library(lmtest)     # For Ljung-Box test
+library(tseries)    # For Jarque-Bera test
+```
+
+```{r inspect-transform-income-data}
+data(IncomeUK)
+
+# Extract the income variable
+y <- IncomeUK[, "income"]
+
+## First-difference to induce stationarity
+dy <- diff(y)
+
+## Summary Statistics
+head(IncomeUK)
+summary(IncomeUK)
+
+# Set up the plotting area: 1 row, 2 columns
+par(mfrow = c(1, 2))
+
+# Plot original income
+plot(y,
+     main = "UK Disposable Income (1971–1985)",
+     ylab = "Income (nominal £)",
+     xlab = "Time",
+     type = "l",
+     col = "darkblue",
+     lwd = 2)
+
+# Plot differenced income
+plot(dy,
+     main = "First Difference of Income",
+     ylab = "ΔIncome",
+     xlab = "Time",
+     type = "l",
+     col = "darkred",
+     lwd = 2)
+```
+
+The income data ranges from approximately £9,000 to £60,000. The average is about £30,600, but the median is only £27,200, indicating a right-skewed distribution with some high-income outliers.
+
+The top 25% of earners (above £44,866) make nearly three times more than the bottom 25% (below £15,820), reflecting a wide income spread and a clear upward trend over time.
+
+The left plot confirms this trend in the raw series, while the right plot shows that after differencing, the data becomes much more stable. This validates differencing as an appropriate transformation before time series modeling.
+
+```{r fit-ar1-to-ar5-models}
+# Estimate AR(p) models (p = 1 to 5) using the first-order 
+# difference of income
+# All models should use the same number of observations
+
+models <- list(
+  AR1 = dynlm(dy ~ L(dy, 1)),
+  AR2 = dynlm(dy ~ L(dy, 1:2)),
+  AR3 = dynlm(dy ~ L(dy, 1:3)),
+  AR4 = dynlm(dy ~ L(dy, 1:4)),
+  AR5 = dynlm(dy ~ L(dy, 1:5))
+)
+```
+
+## Question 1: Estimating AR(p) Models
+We estimated five autoregressive (AR) models using the first-differenced income data, ranging from **AR(1)** to **AR(5)**.
+
+Each model includes lagged values of the dependent variable and is stored in a list, allowing for efficient comparison, AIC evaluation, and residual diagnostics.
+
+```{r evaluate-aic-select-best-ar}
+# We compare AR models using Akaike's Information Criterion 
+# (AIC). The purpose is to identify the model with the 
+# lowest AIC
+
+AIC_values <- sapply(models, AIC)
+print("AIC values for each AR model:")
+print(AIC_values)
+
+# Best model according to AIC:
+best_model <- names(which.min(AIC_values))
+cat("\nBest model according to AIC is:", best_model, "\n")
+```
+## Question 2: AIC Comparison
+Out of the five AR models tested, **AR(5)** had the lowest AIC (828.04), with a 13-point improvement over **AR(4)**. 
+
+According to Burnham and Anderson (2002), a difference greater than 10 in AIC provides **strong evidence** in favor of the model with the lower value. This reinforces the selection of AR(5) as the most appropriate model in the set.
+
+```{r diagnostic-tests-ar-models}
+# Perform Ljung-Box and Jarque-Bera tests on model residuals
+# Interpret and compare results with AIC conclusions
+for (name in names(models)) {
+  cat("\nModel:", name, "\n")
+  residuals <- resid(models[[name]])
+  lb_test <- Box.test(residuals, lag = 10, type = "Ljung-Box")
+  jb_test <- jarque.bera.test(residuals)
+  print(lb_test)
+  print(jb_test)
+}
+print(round(AIC_values, 2))
+```
+
+## Question 3: Residual Diagnostics
+We tested the AR models using two diagnostic tools: the **Ljung–Box test** (to check for autocorrelation) and the **Jarque–Bera test** (to check for normality of residuals).
+
+We used **lag = 10** because our dataset has 58 observations, and √n ≈ 7.6. Ten lags cover approximately 2.5 years of quarterly data, which aligns with typical macroeconomic practice.
+
+**AR(4)** and **AR(5)** passed both tests, but since **AR(5)** also had the lowest AIC, it is the best overall model for inference and forecasting.
+
+```{r summary-model-ar5-selection}
+cat("\nSummary:\n")
+cat("The AR(5) model had the lowest AIC and passed both residual tests,\n")
+cat("indicating no autocorrelation and approximate normality.\n")
+cat("This model offers the best overall balance of fit and residual quality,\n")
+cat("making it suitable for interpretation and forecasting purposes.\n")
+```
+
+[Click here to view the full HTML report](assignment1_problem1.html)
