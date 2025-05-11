@@ -86,7 +86,7 @@ models <- list(
   AR5 = dynlm(dy ~ L(dy, 1:5))
 )
 # We fit five autoregressive (AR) models on the 
-# first-differenced income data,ranging from AR(1) to AR(5).
+# first-differenced income data, ranging from AR(1) to AR(5).
 # Each model includes lagged values of the dependent 
 # variable and is stored in a list for easy comparison and 
 # diagnostics.
@@ -134,9 +134,9 @@ print(round(AIC_values, 2))
 # We chose lag = 10 because our dataset has n=58,and 
 # √n ≈ 7.6.
 # A lag length of 10 covers 2.5 years of quarterly data, 
-# This aligns with common practice in macroeconomic time 
-# series, and helps us detect medium-term autocorrelation 
-# without overfitting.
+# This aligns with common macroeconomic practice and helps detect medium-term 
+# autocorrelation without overfitting.
+
 # AR(4) and AR(5) passed both tests.
 
 # ============================================
