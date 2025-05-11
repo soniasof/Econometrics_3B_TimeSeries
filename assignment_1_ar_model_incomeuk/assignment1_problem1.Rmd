@@ -67,7 +67,7 @@ The top 25% of earners (above £44,866) make nearly three times more than the bo
 The left plot confirms this trend in the raw series, while the right plot shows that after differencing, the data becomes much more stable. This validates differencing as an appropriate transformation before time series modeling.
 
 ```{r fit-ar1-to-ar5-models}
-# Estimate AR(p) models (p = 1 to 5) using the first-order 
+# Fit AR(1) to AR(5) models on differenced income
 # difference of income
 # All models should use the same number of observations
 
@@ -82,13 +82,12 @@ models <- list(
 
 ## Question 1: Estimating AR(p) Models
 We estimated five autoregressive (AR) models using the first-differenced income data, ranging from **AR(1)** to **AR(5)**.
-
 Each model includes lagged values of the dependent variable and is stored in a list, allowing for efficient comparison, AIC evaluation, and residual diagnostics.
 
 ```{r evaluate-aic-select-best-ar}
 # We compare AR models using Akaike's Information Criterion 
-# (AIC). The purpose is to identify the model with the 
-# lowest AIC
+# (AIC). 
+# The goal is to select the model with the lowest AIC
 
 AIC_values <- sapply(models, AIC)
 print("AIC values for each AR model:")
@@ -99,9 +98,8 @@ best_model <- names(which.min(AIC_values))
 cat("\nBest model according to AIC is:", best_model, "\n")
 ```
 ## Question 2: AIC Comparison
-Out of the five AR models tested, **AR(5)** had the lowest AIC (828.04), with a 13-point improvement over **AR(4)**. 
-
-According to Burnham and Anderson (2002), a difference greater than 10 in AIC provides **strong evidence** in favor of the model with the lower value. This reinforces the selection of AR(5) as the most appropriate model in the set.
+Out of the five AR models tested, **AR(5)** had the lowest AIC (828.04), with a 13-point improvement over **AR(4)**. Lower AIC values indicate better model fit, penalizing complexity.
+According to Burnham and Anderson (2002), a difference greater than 10 in AIC provides **strong evidence** in favor of the model with the lower value. This means AR(5) is the most appropriate model in the set.
 
 ```{r diagnostic-tests-ar-models}
 # Perform Ljung-Box and Jarque-Bera tests on model residuals
@@ -119,9 +117,7 @@ print(round(AIC_values, 2))
 
 ## Question 3: Residual Diagnostics
 We tested the AR models using two diagnostic tools: the **Ljung–Box test** (to check for autocorrelation) and the **Jarque–Bera test** (to check for normality of residuals).
-
-We used **lag = 10** because our dataset has 58 observations, and √n ≈ 7.6. Ten lags cover approximately 2.5 years of quarterly data, which aligns with typical macroeconomic practice.
-
+We used **lag = 10** because our dataset has 58 observations, and √n ≈ 7.6. Ten lags cover approximately 2.5 years of quarterly data, which aligns with typical macroeconomic practice. 
 **AR(4)** and **AR(5)** passed both tests, but since **AR(5)** also had the lowest AIC, it is the best overall model for inference and forecasting.
 
 ```{r summary-model-ar5-selection}
@@ -131,5 +127,9 @@ cat("indicating no autocorrelation and approximate normality.\n")
 cat("This model offers the best overall balance of fit and residual quality,\n")
 cat("making it suitable for interpretation and forecasting purposes.\n")
 ```
+
+## Key Takeaway
+AR(5) is both statistically justified and practically interpretable, making it a strong candidate for further forecasting applications.
+---
 
 [Click here to view the full HTML report](assignment1_problem1.html)
