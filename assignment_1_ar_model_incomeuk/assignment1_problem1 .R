@@ -17,12 +17,7 @@ library(dynlm)      # For dynamic linear models
 library(lmtest)     # For Ljung-Box test
 library(tseries)    # For Jarque-Bera test
 
-##NB: 
-# Run in console if packages are not installed:
-# install.packages("Ecdat")
-# install.packages("dynlm")
-# install.packages("lmtest") 
-# install.packages("tseries")  
+ 
 # ============================================
 # 2. Load and inspect the data
 # ============================================
