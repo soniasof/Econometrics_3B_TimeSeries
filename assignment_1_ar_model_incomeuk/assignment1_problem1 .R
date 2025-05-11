@@ -100,7 +100,7 @@ models <- list(
 ## Question 2:
 # ============================================
 # We compare AR models using Akaike's Information Criterion 
-# (AIC). The pupose is to identify the model with the 
+# (AIC). The purpose is to identify the model with the 
 # lowest AIC
 
 AIC_values <- sapply(models, AIC)
@@ -114,7 +114,7 @@ cat("\nBest model according to AIC is:", best_model, "\n")
 # Out of the five AR models tested, AR(5) not only had the 
 # lowest AIC (828.04), but also showed a 13-point 
 # improvement over AR(4), which is statistically meaningful, 
-# according to Burnham and Anderson (2002) a drop of more 
+# according to Burnham and Anderson (2002), a drop of more 
 # than 10 points is considered “strong evidence” in favor of 
 # the lower model.
 
@@ -133,14 +133,14 @@ for (name in names(models)) {
 }
 print(round(AIC_values, 2))
 
-# We tested the AR models using: the Ljung-Box test 
+# We tested the AR models using the Ljung-Box test 
 # (for autocorrelation) and the Jarque-Bera test 
 # (for normality of residuals).
 # We chose lag = 10 because our dataset has n=58,and 
 # √n ≈ 7.6.
 # A lag length of 10 covers 2.5 years of quarterly data, 
 # This aligns with common practice in macroeconomic time 
-# series, and help us detect medium-term autocorrelation 
+# series, and helps us detect medium-term autocorrelation 
 # without overfitting.
 # AR(4) and AR(5) passed both tests.
 
